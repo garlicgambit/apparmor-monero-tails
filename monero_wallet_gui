@@ -1,0 +1,125 @@
+# vim:syntax=apparmor
+
+#include <tunables/global>
+
+@{MONERO_DIR}=.bitmonero
+@{MONERO_DIR_OTHER}={bitmonero,monero*,Monero*}
+@{MONERO_DIR_ALL}=@{MONERO_DIR} @{MONERO_DIR_OTHER}
+
+profile monero_wallet_gui /{lib/live/mount/medium,home/amnesia,media/amnesia/*}/{,Desktop/,Persistent/}{.bitmonero,bitmonero,monero*,Monero*}/**monero-wallet-gui {
+  #include <abstractions/base>
+  #include <abstractions/private-files-strict>
+  #include <abstractions/consoles>
+  #include <abstractions/X>
+  #include <abstractions/fonts>
+  #include <abstractions/freedesktop.org>
+
+  # Location monero-wallet-gui binary
+  /lib/live/mount/medium/@{MONERO_DIR_ALL}/**monero-wallet-gui r,
+  @{HOME}/@{MONERO_DIR_ALL}/**monero-wallet-gui r,
+  @{HOME}/Desktop/@{MONERO_DIR_ALL}/**monero-wallet-gui r,
+  @{HOME}/Persistent/@{MONERO_DIR_ALL}/**monero-wallet-gui r,
+  /media/amnesia/*/Persistent/@{MONERO_DIR_ALL}/**monero-wallet-gui r,
+
+  # Execute monerod
+  /lib/live/mount/medium/@{MONERO_DIR_ALL}/**monerod px,
+#  @{HOME}/@{MONERO_DIR_ALL}/**monerod px,
+  # Error:'profile has merged rule with conflicting x modifiers'
+  # Workaround:
+  /home/amnesia/@{MONERO_DIR_ALL}/**monerod px,
+  /home/amnesia/Desktop/@{MONERO_DIR_ALL}/**monerod px,
+  /home/amnesia/Persistent/@{MONERO_DIR_ALL}/**monerod px,
+  /media/amnesia/*/Persistent/@{MONERO_DIR_ALL}/**monerod px,
+
+  # Default monerod data directory
+  # Block access to monerod files
+  owner @{HOME}/@{MONERO_DIR}/{,testnet/} rw,
+  owner @{HOME}/@{MONERO_DIR}/{,testnet/}** rw,
+  audit deny @{HOME}/@{MONERO_DIR}/{,testnet/}bitmonero.log rw,
+  audit deny @{HOME}/@{MONERO_DIR}/{,testnet/}p2pstate.bin rw,
+  audit deny @{HOME}/@{MONERO_DIR}/{,testnet/}poolstate.bin rw,
+  audit deny @{HOME}/@{MONERO_DIR}/{,testnet/}lmdb/** rw,
+
+  # Other Monero data directories for flexibility
+  # Block access to monerod files
+  owner @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/} rw,
+  owner @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}** rw,
+  audit deny @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}bitmonero.log rw,
+  audit deny @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}p2pstate.bin rw,
+  audit deny @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}poolstate.bin rw,
+  audit deny @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}lmdb/** rw,
+
+  owner @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/} rw,
+  owner @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}** rw,
+  audit deny @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.log rw,
+  audit deny @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}p2pstate.bin rw,
+  audit deny @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}poolstate.bin rw,
+  audit deny @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}lmdb/** rw,
+
+  # Tails Persistent directory
+  # Block access to monerod files
+  owner @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/} rw,
+  owner @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}** rw,
+  audit deny @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.log rw,
+  audit deny @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}p2pstate.bin rw,
+  audit deny @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}poolstate.bin rw,
+  audit deny @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/** rw,
+
+  owner /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/} rw,
+  owner /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}** rw,
+  audit deny /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.log rw,
+  audit deny /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}p2pstate.bin rw,
+  audit deny /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}poolstate.bin rw,
+  audit deny /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/** rw,
+
+  owner /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/} rw,
+  owner /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}** rw,
+  audit deny /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.log rw,
+  audit deny /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}p2pstate.bin rw,
+  audit deny /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}poolstate.bin rw,
+  audit deny /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/** rw,
+
+  # Normal mount
+  # Block access to monerod files
+  owner /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/} rw,
+  owner /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}** rw,
+  audit deny /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}bitmonero.log rw,
+  audit deny /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}p2pstate.bin rw,
+  audit deny /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}poolstate.bin rw,
+  audit deny /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}lmdb/** rw,
+
+  # General files and directories
+  /etc/hosts r,
+  /etc/tor/torsocks.conf r,
+  deny /etc/resolv.conf rwklx,
+  deny /etc/host.conf rwklx,
+  deny /etc/nsswitch.conf rwklx,
+
+  # Monero-wallet-gui specific
+  owner @{HOME}/.config/user-dirs.dirs r,
+  owner @{HOME}/.config/monero-project/ rw,
+  owner @{HOME}/.config/monero-project/* rwk,
+  owner /tmp/monero-core* rw,
+  /lib/live/mount/medium/monero/gui/monero*/translations/monero-core_*.qm r,
+
+  # TODO: NEEDS RESEARCH
+  deny owner @{HOME}/.config/QtProject.conf rw,
+  /etc/os-release r,
+  /etc/debian_version r,
+  /sys/devices/pci[0-9]*/**/{uevent,config} r,
+  /dev/dri/ r,
+
+  # Show directories in file browser
+  / r,
+  /media/ r,
+  /media/amnesia/ r,
+  /media/amnesia/*/ r,
+  owner /media/amnesia/*/Persistent/ r,
+  owner @{HOME}/ r,
+  owner @{HOME}/Desktop/ r,
+  owner @{HOME}/Persistent/ r,
+
+  # Torsocks related
+  owner /{dev,run}/shm/shmfd-* rw,
+
+}
