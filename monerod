@@ -1,0 +1,93 @@
+# vim:syntax=apparmor
+
+#include <tunables/global>
+
+@{MONERO_DIR}=.bitmonero
+@{MONERO_DIR_OTHER}={bitmonero,monero*,Monero*}
+@{MONERO_DIR_ALL}=@{MONERO_DIR} @{MONERO_DIR_OTHER}
+
+profile monerod /{lib/live/mount/medium,home/amnesia,media/amnesia/*}/{,Desktop/,Persistent/}{.bitmonero,bitmonero,monero*,Monero*}/**monerod {
+  #include <abstractions/base>
+  #include <abstractions/private-files-strict>
+
+  # Location monerod binary
+  /lib/live/mount/medium/@{MONERO_DIR_ALL}/**monerod mr,
+  @{HOME}/@{MONERO_DIR_ALL}/**monerod mr,
+  @{HOME}/Desktop/@{MONERO_DIR_ALL}/**monerod mr,
+  @{HOME}/Persistent/@{MONERO_DIR_ALL}/**monerod mr,
+  /media/amnesia/*/Persistent/@{MONERO_DIR_ALL}/**monerod mr,
+
+  # Default monerod data directory
+  owner @{HOME}/@{MONERO_DIR}/{,testnet/} rw,
+  owner @{HOME}/@{MONERO_DIR}/{,testnet/}bitmonero.log rw,
+  owner @{HOME}/@{MONERO_DIR}/{,testnet/}bitmonero.conf r,
+  owner @{HOME}/@{MONERO_DIR}/{,testnet/}p2pstate.bin rw,
+  owner @{HOME}/@{MONERO_DIR}/{,testnet/}poolstate.bin rw,
+  owner @{HOME}/@{MONERO_DIR}/{,testnet/}lmdb/ rw,
+  owner @{HOME}/@{MONERO_DIR}/{,testnet/}lmdb/data.mdb mrw,
+  owner @{HOME}/@{MONERO_DIR}/{,testnet/}lmdb/lock.mdb mrwk,
+
+  # Other Monero data directories for flexibility
+  owner @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/} rw,
+  owner @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}bitmonero.log rw,
+  owner @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}bitmonero.conf r,
+  owner @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}p2pstate.bin rw,
+  owner @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}poolstate.bin rw,
+  owner @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}lmdb/ rw,
+  owner @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}lmdb/data.mdb mrw,
+  owner @{HOME}/@{MONERO_DIR_OTHER}/{,testnet/}lmdb/lock.mdb mrwk,
+
+  owner @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/} rw,
+  owner @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.log rw,
+  owner @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.conf r,
+  owner @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}p2pstate.bin rw,
+  owner @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}poolstate.bin rw,
+  owner @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}lmdb/ rw,
+  owner @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}lmdb/data.mdb mrw,
+  owner @{HOME}/Desktop/@{MONERO_DIR_ALL}/{,testnet/}lmdb/lock.mdb mrwk,
+
+  # Tails Persistent directory
+  owner @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/} rw,
+  owner @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.log rw,
+  owner @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.conf r,
+  owner @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}p2pstate.bin rw,
+  owner @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}poolstate.bin rw,
+  owner @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/ rw,
+  owner @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/data.mdb mrw,
+  owner @{HOME}/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/lock.mdb mrwk,
+
+  owner /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/} rw,
+  owner /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.log rw,
+  owner /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.conf r,
+  owner /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}p2pstate.bin rw,
+  owner /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}poolstate.bin rw,
+  owner /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/ rw,
+  owner /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/data.mdb mrw,
+  owner /live/persistence/TailsData_unlocked/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/lock.mdb mrwk,
+
+  owner /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/} rw,
+  owner /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.log rw,
+  owner /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}bitmonero.conf r,
+  owner /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}p2pstate.bin rw,
+  owner /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}poolstate.bin rw,
+  owner /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/ rw,
+  owner /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/data.mdb mrw,
+  owner /media/amnesia/TailsData/Persistent/@{MONERO_DIR_ALL}/{,testnet/}lmdb/lock.mdb mrwk,
+
+  # Normal mount 
+  owner /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/} rw,
+  owner /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}bitmonero.log rw,
+  owner /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}bitmonero.conf r,
+  owner /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}p2pstate.bin rw,
+  owner /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}poolstate.bin rw,
+  owner /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}lmdb/ rw,
+  owner /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}lmdb/data.mdb mrw,
+  owner /media/amnesia/*/{,Persistent/}@{MONERO_DIR_ALL}/{,testnet/}lmdb/lock.mdb mrwk,
+
+  # General files and directories
+  owner /tmp/bitmonero.daemon.stdout.stderr rw,
+  /etc/hosts r,
+  /etc/tor/torsocks.conf r,
+  deny /etc/resolv.conf rwklx,
+
+}
